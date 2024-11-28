@@ -50,6 +50,8 @@ class WheelOfFortune extends Component {
     this._wheelPaths = this.makeWheel();
     this._angle = new Animated.Value(0);
 
+    this.angleListener();
+
     this.props.options.onRef(this);
 
     return true;
@@ -336,7 +338,11 @@ class WheelOfFortune extends Component {
   _renderTopToPlay() {
     if (this.state.started == false) {
       return (
-        <TouchableOpacity onPress={() => this._onPress()}>
+        <TouchableOpacity onPress={() => {
+          this.prepareWheel().then(() => {
+            this._onPress()
+          })
+        }}>
           {this.props.options.playButton()}
         </TouchableOpacity>
       );
