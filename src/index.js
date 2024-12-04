@@ -6,6 +6,7 @@ import {
   Animated,
   TouchableOpacity,
   Image,
+  Easing
 } from 'react-native';
 import * as d3Shape from 'd3-shape';
 
@@ -33,13 +34,14 @@ class WheelOfFortune extends Component {
     this.prepareWheel();
   }
 
-  prepareWheel = async() => {
+  prepareWheel = async () => {
     this.Rewards = this.props.options.rewards;
     this.RewardCount = this.Rewards.length;
     this.winnerPoint = this.props.options.winnerPoint;
     this.numberOfSegments = this.RewardCount;
     this.fontSize = 20;
     this.oneTurn = 360;
+    this.tolerance = 0.1;
     this.angleBySegment = this.oneTurn / this.numberOfSegments;
     this.angleOffset = this.angleBySegment / 2;
     if (this.props.options.winner == undefined) {
@@ -77,6 +79,16 @@ class WheelOfFortune extends Component {
 
   angleListener = () => {
     this._angle.addListener(event => {
+
+      var value = event.value;
+
+      // // if ( Math.abs(value % this.angleBySegment - this.numberOfSegments) < this.tolerance) {
+      // // }
+      // console.log("Mevcut açı ", value , ' Segment değeri: ' , Math.abs(value % this.oneTurn % this.angleBySegment - this.numberOfSegments));
+
+
+      // console.log(Math.abs(value % this.angleBySegment))
+
       if (this.state.enabled) {
         this.setState({
           enabled: false,
@@ -155,11 +167,12 @@ class WheelOfFortune extends Component {
     });
     Animated.timing(this._angle, {
       toValue:
-        365 -
+        this.props.options.removeAngel -
         this.winner * (this.oneTurn / this.numberOfSegments) +
         360 * (duration / 1000),
-      duration: (duration),
+      duration: (duration + this.props.options.delay),
       useNativeDriver: true,
+      easing: Easing.bezier(this.props.options.x1, this.props.options.y1, this.props.options.x2, this.props.options.y2),
     }).start(() => {
       const winnerIndex = this._getWinnerIndex();
       this.setState({
@@ -178,12 +191,12 @@ class WheelOfFortune extends Component {
         fill={
           this.props.options.theme.textColors ? this.props.options.theme.textColors[i] : '#fff'
         }
-        stroke= {this.props.options.theme.stroke[i] ? this.props.options.theme.stroke[i] : 'white'}
+        stroke={this.props.options.theme.stroke[i] ? this.props.options.theme.stroke[i] : 'white'}
         strokeWidth={this.props.options.theme.strokeWidth ? this.props.options.theme.strokeWidth : 1.5}
         fontWeight={this.props.options.theme.fontWeight ? this.props.options.theme.fontWeight : '1000'}
         textAnchor={this.props.options.textAnchor ? this.props.options.textAnchor : 'middle'}
         fontSize={this.props.options.fontSize ? this.props.options.fontSize : 35}
-        >
+      >
         {/* <TSpan style={[styles.textStyles]} x={x} dy={this.fontSize} fill={
           this.props.options.textColor ? this.props.options.textColor : '#fff'
         }>
@@ -193,7 +206,7 @@ class WheelOfFortune extends Component {
           // Render reward text vertically
           if (this.props.options.textAngle === 'vertical') {
             return (
-              <TSpan style={styles.textStyles} x={x} dy={this.fontSize+9} transform={`scale(-1, 1) translate(${(x * 2) < 0 ? (-x * 2):"-"+(x * 2)}, 0)`} key={`arc-${i}-slice-${j}`}>
+              <TSpan style={styles.textStyles} x={x} dy={this.fontSize + 9} transform={`scale(-1, 1) translate(${(x * 2) < 0 ? (-x * 2) : "-" + (x * 2)}, 0)`} key={`arc-${i}-slice-${j}`}>
                 {number.charAt(j)}
               </TSpan>
             );
@@ -299,6 +312,10 @@ class WheelOfFortune extends Component {
       1,
     );
 
+    YOLO.addListener(({ value }) => {
+      this.props.options.knobListener(value);
+    });
+
     return (
       <Animated.View
         style={{
@@ -306,7 +323,7 @@ class WheelOfFortune extends Component {
           height: knobSize * 2,
           justifyContent: 'flex-end',
           zIndex: 99999,
-          position:'relative',
+          position: 'relative',
           top: 18,
           opacity: this.state.wheelOpacity,
           transform: [
