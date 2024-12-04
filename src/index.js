@@ -99,8 +99,8 @@ class WheelOfFortune extends Component {
   makeWheel = () => {
     const data = Array.from({ length: this.numberOfSegments }).fill(1);
     const arcs = d3Shape.pie()(data);
-    var colors = this.props.options.colors
-      ? this.props.options.colors
+    var colors = this.props.options.theme.colors.length > 0
+      ? this.props.options.theme.colors
       : [
         '#01c6fb',
         '#0095bd',
@@ -175,13 +175,14 @@ class WheelOfFortune extends Component {
         x={x - number.length * 5}
         y={y - 80}
         fill={
-          this.props.options.textColor ? this.props.options.textColor : '#000'
+          this.props.options.theme.textColors ? this.props.options.theme.textColors[i] : '#fff'
         }
-        stroke="white"
-        strokeWidth="1.5"
-        fontWeight="1000"
-        textAnchor="middle"
-        fontSize="35">
+        stroke= {this.props.options.theme.stroke[i] ? this.props.options.theme.stroke[i] : 'white'}
+        strokeWidth={this.props.options.theme.strokeWidth ? this.props.options.theme.strokeWidth : 1.5}
+        fontWeight={this.props.options.theme.fontWeight ? this.props.options.theme.fontWeight : '1000'}
+        textAnchor={this.props.options.textAnchor ? this.props.options.textAnchor : 'middle'}
+        fontSize={this.props.options.fontSize ? this.props.options.fontSize : 35}
+        >
         {/* <TSpan style={[styles.textStyles]} x={x} dy={this.fontSize} fill={
           this.props.options.textColor ? this.props.options.textColor : '#fff'
         }>
@@ -383,7 +384,7 @@ const styles = StyleSheet.create({
   textStyles: {
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: -1, height: 1 },
-    textShadowRadius: 10
+    textShadowRadius: 10,
   },
   content: {},
   startText: {
