@@ -36,7 +36,7 @@ class WheelOfFortune extends Component {
   prepareWheel = async() => {
     this.Rewards = this.props.options.rewards;
     this.RewardCount = this.Rewards.length;
-
+    this.winnerPoint = this.props.options.winnerPoint;
     this.numberOfSegments = this.RewardCount;
     this.fontSize = 20;
     this.oneTurn = 360;
@@ -140,10 +140,11 @@ class WheelOfFortune extends Component {
       return Math.floor(deg / this.angleBySegment);
     }
     // wheel turning clockwise
-    return (
+    var winner = (
       (this.numberOfSegments - Math.floor(deg / this.angleBySegment)) %
       this.numberOfSegments
-    );
+    )
+    return this.winner;
   };
 
   _onPress = () => {
@@ -355,7 +356,7 @@ class WheelOfFortune extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity
+        <View
           style={{
             width: width,
             height: height / 2,
@@ -366,7 +367,7 @@ class WheelOfFortune extends Component {
           <Animated.View style={[styles.content, { padding: 10 }]}>
             {this._renderSvgWheel()}
           </Animated.View>
-        </TouchableOpacity>
+        </View>
         {this.props.options.playButton ? this._renderTopToPlay() : null}
       </View>
     );
