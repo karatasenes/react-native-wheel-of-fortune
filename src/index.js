@@ -23,7 +23,7 @@ class WheelOfFortune extends Component {
       started: false,
       finished: false,
       winner: null,
-      gameScreen: new Animated.Value(width - 85),
+      gameScreen: new Animated.Value(width - 44),
       wheelOpacity: new Animated.Value(1),
       imageLeft: new Animated.Value(width / 2 - 30),
       imageTop: new Animated.Value(height / 2 - 70),
@@ -49,8 +49,6 @@ class WheelOfFortune extends Component {
     }
     this._wheelPaths = this.makeWheel();
     this._angle = new Animated.Value(0);
-
-    this.angleListener();
 
     this.props.options.onRef(this);
 
@@ -104,21 +102,26 @@ class WheelOfFortune extends Component {
     var colors = this.props.options.colors
       ? this.props.options.colors
       : [
-        '#E07026',
-        '#E8C22E',
-        '#ABC937',
-        '#4F991D',
-        '#22AFD3',
-        '#5858D0',
-        '#7B48C8',
-        '#D843B9',
-        '#E23B80',
-        '#D82B2B',
+        '#01c6fb',
+        '#0095bd',
+        '#01c6fb',
+        '#8e09dc',
+        '#f20c0c',
+        '#04bdcf',
+        '#0095bd',
+        '#01c6fb',
+        '#f20c0c',
+        '#0095bd',
+        '#8e09dc',
+        '#01c6fb',
+        '#f20c0c',
+        '#8f09d9',
+        '#0095bd',
       ];
     return arcs.map((arc, index) => {
       const instance = d3Shape
         .arc()
-        .padAngle(0.01)
+        .padAngle(0.0)
         .outerRadius(width / 2)
         .innerRadius(this.props.options.innerRadius || 100);
       return {
@@ -154,7 +157,7 @@ class WheelOfFortune extends Component {
         365 -
         this.winner * (this.oneTurn / this.numberOfSegments) +
         360 * (duration / 1000),
-      duration: duration,
+      duration: (duration),
       useNativeDriver: true,
     }).start(() => {
       const winnerIndex = this._getWinnerIndex();
@@ -172,21 +175,23 @@ class WheelOfFortune extends Component {
         x={x - number.length * 5}
         y={y - 80}
         fill={
-          this.props.options.textColor ? this.props.options.textColor : '#fff'
+          this.props.options.textColor ? this.props.options.textColor : '#000'
         }
-        style={styles.textStyles}
+        stroke="white"
+        strokeWidth="1.5"
+        fontWeight="1000"
         textAnchor="middle"
-        fontSize={this.fontSize}>
-        <TSpan style={[styles.textStyles]} x={x} dy={this.fontSize} fill={
+        fontSize="35">
+        {/* <TSpan style={[styles.textStyles]} x={x} dy={this.fontSize} fill={
           this.props.options.textColor ? this.props.options.textColor : '#fff'
         }>
           •
-        </TSpan>
+        </TSpan> */}
         {Array.from({ length: number.length }).map((_, j) => {
           // Render reward text vertically
           if (this.props.options.textAngle === 'vertical') {
             return (
-              <TSpan style={styles.textStyles} x={x} dy={this.fontSize} key={`arc-${i}-slice-${j}`}>
+              <TSpan style={styles.textStyles} x={x} dy={this.fontSize+9} transform={`scale(-1, 1) translate(${(x * 2) < 0 ? (-x * 2):"-"+(x * 2)}, 0)`} key={`arc-${i}-slice-${j}`}>
                 {number.charAt(j)}
               </TSpan>
             );
@@ -298,8 +303,9 @@ class WheelOfFortune extends Component {
           width: knobSize,
           height: knobSize * 2,
           justifyContent: 'flex-end',
-          zIndex: 1,
-          top: 30,
+          zIndex: 99999,
+          position:'relative',
+          top: 18,
           opacity: this.state.wheelOpacity,
           transform: [
             {
@@ -338,11 +344,7 @@ class WheelOfFortune extends Component {
   _renderTopToPlay() {
     if (this.state.started == false) {
       return (
-        <TouchableOpacity onPress={() => {
-          this.prepareWheel().then(() => {
-            this._onPress()
-          })
-        }}>
+        <TouchableOpacity onPress={() => this._onPress()}>
           {this.props.options.playButton()}
         </TouchableOpacity>
       );
